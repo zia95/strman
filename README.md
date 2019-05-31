@@ -1,0 +1,1 @@
+manipulate multiple strings at once. 
