@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.28803.452
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "strman", "strman\strman.vcxproj", "{979DB27A-452A-47C1-A933-AD6C44B18576}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "strmangui", "strmangui\strmangui.vcxproj", "{6F62E571-0E8C-4452-A88E-EC21BFE8016A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{979DB27A-452A-47C1-A933-AD6C44B18576}.Release|x64.Build.0 = Release|x64
 		{979DB27A-452A-47C1-A933-AD6C44B18576}.Release|x86.ActiveCfg = Release|Win32
 		{979DB27A-452A-47C1-A933-AD6C44B18576}.Release|x86.Build.0 = Release|Win32
+		{6F62E571-0E8C-4452-A88E-EC21BFE8016A}.Debug|x64.ActiveCfg = Debug|x64
+		{6F62E571-0E8C-4452-A88E-EC21BFE8016A}.Debug|x64.Build.0 = Debug|x64
+		{6F62E571-0E8C-4452-A88E-EC21BFE8016A}.Debug|x86.ActiveCfg = Debug|Win32
+		{6F62E571-0E8C-4452-A88E-EC21BFE8016A}.Debug|x86.Build.0 = Debug|Win32
+		{6F62E571-0E8C-4452-A88E-EC21BFE8016A}.Release|x64.ActiveCfg = Release|x64
+		{6F62E571-0E8C-4452-A88E-EC21BFE8016A}.Release|x64.Build.0 = Release|x64
+		{6F62E571-0E8C-4452-A88E-EC21BFE8016A}.Release|x86.ActiveCfg = Release|Win32
+		{6F62E571-0E8C-4452-A88E-EC21BFE8016A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
