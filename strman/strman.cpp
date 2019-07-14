@@ -3,26 +3,45 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
-#include "../../CommandLineParser/CommandLineParser/cmdlnprsr.h"
+//#include "../../CommandLineParser/CommandLineParser/cmdlnprsr.h"
+#include "../../utl/utl/utl.h"
+#include "../../utl/utl/utl_cmdln.h"
+#include "../../utl/utl/utl_str.h"
 
 using namespace std;
 
 
 
-wstring g_finput;
-vector<wstring> g_fdata;
+void PrintHelp()
+{
+	wprintf(L"Usage: strman [InputFile] [Option]\n");
+	wprintf(L"Options:\n");
+	wprintf(L"\t-v,--verbos                \tTurn ON verbos\n");
+	wprintf(L"\t-af,--appfront  <string>   \tAppend string to front\n");
+	wprintf(L"\t-ab,--appback   <string>   \tAppend string to back\n");
+	wprintf(L"\t-r, --rmv       <string>   \tRemove string from front\n");
+	wprintf(L"\t-rc,--rmvchar   <char(s)>  \tRemove char(s)\n");
+	wprintf(L"\t-rl,--rmvlower             \tRemove all lower char(s)\n");
+	wprintf(L"\t-ru,--rmvupper             \tRemove all upper char(s)\n");
+	wprintf(L"\t-rn,--rmvnumber            \tRemove all numbers char(s)\n");
+	wprintf(L"\t-rs,--rmvspecial           \tRemove all special char(s)\n");
+}
+
+
+
+string g_finput;//file
+vector<wstring> g_fdata;//file data---read lines
 struct OPTIONS
 {
-	wchar_t* data;
+	char* data;
 	bool verbos;
 	enum OPERATIONS
 	{
 		NONE,
 		APP_F,
 		APP_B,
-		RMV_F,
-		RMV_B,
 		RMV,
+		RMV_C,
 		RMV_L,
 		RMV_U,
 		RMV_N,
@@ -108,7 +127,7 @@ void remove_special(wstring& line)
 void PrintFile(vector<wstring>& lines, bool print_ln_nums = false)
 {
 	int lnNum = 1;
-	if (g_opt.verbos) printf("--------------------------------------------------------------\n");
+	if (g_opt.verbos) wprintf(L"--------------------------------------------------------------\n");
 	for (auto& ln : lines)
 	{
 		if (print_ln_nums)
@@ -122,12 +141,12 @@ void PrintFile(vector<wstring>& lines, bool print_ln_nums = false)
 		}
 		std::wcout << ln << std::endl;
 	}
-	if (g_opt.verbos) printf("--------------------------------------------------------------\n");
+	if (g_opt.verbos) wprintf(L"--------------------------------------------------------------\n");
 }
 
 
 
-void ope_run(wstring& line, wchar_t* data)
+void ope_run(wstring& line, const wchar_t* data)
 {
 	switch (g_opt.ope )
 	{
@@ -141,17 +160,13 @@ void ope_run(wstring& line, wchar_t* data)
 			line = data + line;
 			break;
 		}
-		case g_opt.RMV_F:
-		{
-			remove_front(line, data);
-			break;
-		}
-		case g_opt.RMV_B:
-		{
-			remove_back(line, data);
-			break;
-		}
 		case g_opt.RMV:
+		{
+			strw_remove((pstrw)line.c_str(), strw_end((pstrw)line.c_str()), data);
+			//remove_front(line, data);
+			break;
+		}
+		case g_opt.RMV_C:
 		{
 			remove_chars(line, data);
 			break;
@@ -180,9 +195,21 @@ void ope_run(wstring& line, wchar_t* data)
 }
 int ope_run()
 {
+	/*
+	wchar_t* __opt_data = NULL;
+
+	if(narrow_to_wide(g_opt.data, &__opt_data) != strlen(g_opt.data))
+	{
+		return EXIT_FAILURE;
+	}
+ */
+	string __opt_data_s = g_opt.data ? g_opt.data : "";
+	wstring __opt_data;
+	__opt_data.assign(__opt_data_s.begin(), __opt_data_s.end());
+
 	for (auto& ln : g_fdata)
 	{
-		ope_run(ln, g_opt.data);
+		ope_run(ln, __opt_data.c_str());
 	}
 
 	if (g_opt.verbos)
@@ -192,11 +219,14 @@ int ope_run()
 
 	PrintFile(g_fdata);
 
+	//delete[] __opt_data;
 	return EXIT_SUCCESS;
 }
-bool ReadWholeFile(const wstring& filepath, vector<wstring>& lines)
+
+bool ReadWholeFile(const string& filepath, vector<wstring>& lines)
 {
 	wifstream f(filepath);
+	
 	if (f.is_open())
 	{
 		wstring cline;
@@ -212,24 +242,21 @@ bool ReadWholeFile(const wstring& filepath, vector<wstring>& lines)
 	}
 	return false;
 }
-
-void PrintHelp()
+/*
+bool ReadWholeFile(const wchar_t* filepath, vector<wstring>& lines)
 {
-	printf("Usage: strman [InputFile] [Option]\n");
-	printf("Options:\n");
-	printf("\t-v,--verbos                \tTurn ON verbos\n");
-	printf("\t-af,--appfront  <string>   \tAppend string to front\n");
-	printf("\t-ab,--appback   <string>   \tAppend string to back\n");
-	printf("\t-rf,--rmvfront  <string>   \tRemove string from front\n");
-	printf("\t-rb,--rmvback   <string>   \tRemove string from back\n");
-	printf("\t-rc,--rmvchar   <char(s)>  \tRemove char(s)\n");
-	printf("\t-rl,--rmvlower             \tRemove all lower char(s)\n");
-	printf("\t-ru,--rmvupper             \tRemove all upper char(s)\n");
-	printf("\t-rn,--rmvnumber            \tRemove all numbers char(s)\n");
-	printf("\t-rs,--rmvspecial           \tRemove all special char(s)\n");
+	char* _filepath;
+	bool res = false;
+	if(wide_to_narrow(filepath, &_filepath) == wcslen(filepath))
+		res = ReadWholeFile(_filepath, lines);
+	 
+	 delete[] _filepath;
+
+	 return res;
 }
+ */
 
-
+/*
 bool ParseCommandLine(int argc, wchar_t* argv[])
 {
 	const wchar_t* sargv[] = 
@@ -336,31 +363,103 @@ bool ParseCommandLine(int argc, wchar_t* argv[])
 	
 	return !g_finput.empty() && (g_opt.data || (g_opt.ope == g_opt.RMV_L || g_opt.ope == g_opt.RMV_U || g_opt.ope == g_opt.RMV_N || g_opt.ope == g_opt.RMV_S)) && g_opt.ope;
 }
+*/
 
-#ifndef NDEBUG
-int wmain()
+#define STR_EQUI_CMDLN(K, AV, I) (str_equi(K, AV[I]) || str_equi(K, AV[(I+1)]))
+
+bool ParseCommandLine(int argc, char* argv[])
 {
-	int argc = 5;
-	const wchar_t* argv[] = {L"strman.exe", L"C:/Users/ziaud/Desktop/test/str.txt", L"-v", L"-rc", L" \t#"};
-#else
-int wmain(int argc, wchar_t* argv[])
+	const char* sargv[] = 
+	{ 
+		"-v", "--verbos",//01
+		"-af", "--appfront",//23
+		"-ab", "--appback",//45
+		"-r", "--rmv",//67
+		"-rc", "--rmvchar",//89
+		"-rl", "--rmvlower",//10 11
+		"-ru", "--rmvupper",//12 13
+		"-rn", "--rmvnumber",//14 15
+		"-rs", "--rmvspecial"//16 17
+	};
+
+	PCmdLnParserA_t parser = cmdln_parser_newa(argc, argv, 20, sargv);
+
+	if (parser)
+	{
+		cmdln_first(parser);
+
+		do
+		{
+			PKeypairA_t res = cmdln_parsea(parser);
+			if (res && !g_finput.empty())
+			{
+				if (STR_EQUI_CMDLN(res->key, sargv, 0)) //verbos
+				{
+					g_opt.verbos = true;
+				}
+				else if (STR_EQUI_CMDLN(res->key, sargv, 2))//app front
+				{
+					g_opt.ope = g_opt.APP_F;
+					g_opt.data = res->val;
+				}
+				else if (STR_EQUI_CMDLN(res->key, sargv, 4))//app back
+				{
+					g_opt.ope = g_opt.APP_B;
+					g_opt.data = res->val;
+				}
+				else if (STR_EQUI_CMDLN(res->key, sargv, 6))//rmv front
+				{
+					g_opt.ope = g_opt.RMV;
+					g_opt.data = res->val;
+				}
+				else if (STR_EQUI_CMDLN(res->key, sargv, 8))//rmv chars
+				{
+					g_opt.ope = g_opt.RMV_C;
+					g_opt.data = res->val;
+				}
+				else if (STR_EQUI_CMDLN(res->key, sargv, 10))//rmv lower
+				{
+					g_opt.ope = g_opt.RMV_L;
+				}
+				else if (STR_EQUI_CMDLN(res->key, sargv, 12))//rm upper
+				{
+					g_opt.ope = g_opt.RMV_U;
+				}
+				else if (STR_EQUI_CMDLN(res->key, sargv, 14))//rmv number
+				{
+					g_opt.ope = g_opt.RMV_N;
+				}
+				else if (STR_EQUI_CMDLN(res->key, sargv, 16))//rmv special
+				{
+					g_opt.ope = g_opt.RMV_S;
+				}
+			}
+			else
+			{
+				if (cmdln_curr_idx(parser) == 1)
+				{
+					g_finput = cmdln_curr_arg(parser);
+				}
+			}
+		} while (cmdln_next(parser));
+
+		cmdln_parser_free(parser);
+	}
+	
+	return !g_finput.empty() && (g_opt.data || (g_opt.ope == g_opt.RMV_L || g_opt.ope == g_opt.RMV_U || g_opt.ope == g_opt.RMV_N || g_opt.ope == g_opt.RMV_S)) && g_opt.ope;
+}
+int main(int argc, char* argv[])
 {
-#endif
-
-
-
-
 
 	g_opt = { 0 };
 	g_finput.clear();
 	g_fdata.clear();
 
-	if (ParseCommandLine(argc, (wchar_t**)argv))
+	if (ParseCommandLine(argc, argv))
 	{
-		ReadWholeFile(g_finput, g_fdata);
-		if (g_fdata.empty())
+		if (!ReadWholeFile(g_finput, g_fdata) || g_fdata.empty())
 		{
-			cerr << "ERROR: Can't go on because the file is empty..." << endl;
+			wcerr << L"ERROR: Can't go on because the file doesn't exist or it is empty..." << endl;
 			return -2;
 		}
 		else
@@ -375,7 +474,7 @@ int wmain(int argc, wchar_t* argv[])
 	}
 	else
 	{
-		cerr << "ERROR: Command line error..." << endl;
+		wcerr << L"ERROR: Command line error..." << endl;
 		PrintHelp();
 		return -1;
 	}

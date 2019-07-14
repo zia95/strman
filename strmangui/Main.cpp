@@ -1,27 +1,4 @@
-
-
-
-
-#pragma comment(lib, "winmm.lib")
-#pragma comment(lib, "comctl32.lib")
-#pragma comment(lib, "rpcrt4.lib")
-#pragma comment(lib, "wsock32.lib")
-#pragma comment(lib, "oleacc.lib")
-#pragma comment(lib, "odbc32.lib")
-#pragma comment(lib, "kernel32.lib")
-#pragma comment(lib, "user32.lib")
-#pragma comment(lib, "gdi32.lib")
-#pragma comment(lib, "winspool.lib")
-#pragma comment(lib, "comdlg32.lib")
-#pragma comment(lib, "advapi32.lib")
-#pragma comment(lib, "shell32.lib")
-#pragma comment(lib, "ole32.lib")
-#pragma comment(lib, "oleaut32.lib")
-#pragma comment(lib, "uuid.lib")
-#pragma comment(lib, "odbccp32.lib")
-
-
-
+#include "winglib.h"
 #include <wx/wx.h>
 #include <wx/wfstream.h>
 #include "strman.h"
@@ -77,34 +54,45 @@ public:
 	}
 
 
-	bool save_file(wxString& file)
+	bool save_file(bool save_as)
 	{
-		wxFileDialog saveFileDialog(this, "Save XYZ file", "", "", "All files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+		if (save_as == false && wxFileExists(m_file))
+		{
+			return this->m_txtStrings->SaveFile(m_file);
+		}
+
+
+
+
+		wxFileDialog saveFileDialog(this, "Save text file", "", m_file, "All files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 		if (saveFileDialog.ShowModal() == wxID_CANCEL)
 			return false;     // the user changed idea...
 
-		// save the current contents in the file;
-		// this can be done with e.g. wxWidgets output streams:
-		wxFileOutputStream output_stream(saveFileDialog.GetPath());
-		if (!output_stream.IsOk())
-		{
-			wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
-			return false;
-		}
 
-		return true;
+		m_file = saveFileDialog.GetPath();
+
+		if (this->m_txtStrings->SaveFile(m_file))
+		{
+			this->SetTitle(m_title + " - " + m_file);
+			return true;
+		}
+		return false;
 	}
 
 
 	void m_mnuOpenOnMenuSelection(wxCommandEvent& event)
 	{
-		wxFileDialog openFileDialog(this, "Open text file", "", "",	"All files (*.*)|*.*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+		wxFileDialog openFileDialog(this, "Open text file", "", m_file,	"All files (*.*)|*.*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 		if (openFileDialog.ShowModal() == wxID_CANCEL)
 			return;     // the user changed idea...
 
 		// proceed loading the file chosen by the user;
 		// this can be done with e.g. wxWidgets input streams:
 		m_file = openFileDialog.GetPath();
+
+		if (this->m_txtStrings->LoadFile(m_file) == false)
+			return;
+		/*
 		wxFileInputStream input_stream(m_file);
 		if (!input_stream.IsOk())
 		{
@@ -122,19 +110,39 @@ public:
 
 		this->m_txtStrings->Clear();
 		this->m_txtStrings->WriteText(s);
-
+		*/
 		this->SetTitle(m_title + " - " + m_file);
 	}
 	void m_mnuSaveOnMenuSelection(wxCommandEvent& event)
 	{
-
+		if (!this->save_file(false))
+		{
+			wxMessageBox("Failed to save file", "Error", wxICON_ERROR | wxOK, this);
+		}
 	}
 	void m_mnuSaveAsOnMenuSelection(wxCommandEvent& event)
 	{
-		
+		if (!this->save_file(true))
+		{
+			wxMessageBox("Failed to save file", "Error", wxICON_ERROR | wxOK, this);
+		}
 	}
 	void m_mnuExitOnMenuSelection(wxCommandEvent& event) 
 	{
+
+		if (m_file.IsEmpty() == false)
+		{
+			if (wxMessageBox("Do you want to close without saving/updating file?", "Save?", wxICON_QUESTION | wxYES_NO, this) == wxNO)
+			{
+				if (!this->save_file(false))
+				{
+					wxMessageBox("Failed to save file", "Error", wxICON_ERROR | wxOK, this);
+					return;
+				}
+			}
+		}
+
+
 		//exit app
 		this->Close();
 	}
@@ -163,7 +171,8 @@ public:
 		if (input_get_string(inp))
 			str_ope_perform(str_append_back, this->m_txtStrings, inp.c_str());
 	}
-
+	
+	
 	void m_mnuRLowerOnMenuSelection(wxCommandEvent& event)
 	{
 		str_ope_perform(str_remove_lower, this->m_txtStrings);
