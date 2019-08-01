@@ -9,8 +9,7 @@
 #include "../../utl/utl/utl.h"
 #include "../../utl/utl/utl_cmdln.h"
 #include "../../utl/utl/utl_str.h"
-#pragma comment(lib, "../../utl/Debug/utl.lib")
-//#pragma comment(lib, "../../utl/x64/Debug/utl.lib")
+#include "../../utl/utl/utl_file.h"
 
 
 #define OPTIONS_COUNT 22
@@ -36,7 +35,7 @@ const char* cmdln_options[OPTIONS_COUNT] =
 #define PRINT_HELP_NOPARAM(ARG1, ARG2, DESCP)		PRINT_HELP_PARAM(ARG1, ARG2, PARAM_NONE, DESCP);
 void print_help()
 {
-	printf("Usage: strman [InputFile] [Option]\n");
+	printf("Usage: strman <InputFile> [Option]\n");
 	printf("Options:\n");
 	
 	PRINT_HELP_NOPARAM(cmdln_options[0], cmdln_options[1], "Turn on verbos");
@@ -78,7 +77,9 @@ POpts parse_command_line(int argc, char* argv[])
 			if (cmdln_curr_idx(parser) == 1)
 			{
 				opts->file = cmdln_curr_arg(parser);
-				continue;
+				if (file_exista(opts->file))
+					continue;
+				opts->file = NULL;
 			}
 
 			PKeypairA_t res = cmdln_parsea(parser);
