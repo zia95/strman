@@ -151,7 +151,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="strman.cpp" />
+    <ClCompile Include="strman.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cmndline.h" />
+    <ClInclude Include="ope.h" />
+    <ClInclude Include="opts.h" />
+    <ClInclude Include="utllib.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
