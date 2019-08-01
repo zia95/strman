@@ -143,7 +143,7 @@ int ope_run_list(POpts ope, PLList lst)
 
 
 	PLLElement elm = NULL;
-	for (int i = 0; i < llist_count(lst); i++)
+	for (size_t i = 0; i < llist_count(lst); i++)
 	{
 		if (ope->ignore_lines_raw && is_ignored_line(ign_ln, ign_ln_c, i))
 			continue;

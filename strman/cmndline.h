@@ -30,26 +30,30 @@ const char* cmdln_options[OPTIONS_COUNT] =
 	"-rn", "--rmvchnum",//20 21
 };
 #define PARAM_NONE ""
+//format: opt1, opt2, param, descp
+#define PRINT_HELP_PARAM(ARG1, ARG2, PARAM, DESCP)	printf("%3s,%10s    %10s\t\t%s\n", ARG1, ARG2, PARAM, DESCP);
+//#define PRINT_HELP_NOPARAM(ARG1, ARG2, DESCP)		printf("%3s,%10s\t\t\t\t%s\n", ARG1, ARG2, DESCP);
+#define PRINT_HELP_NOPARAM(ARG1, ARG2, DESCP)		PRINT_HELP_PARAM(ARG1, ARG2, PARAM_NONE, DESCP);
 void print_help()
 {
 	printf("Usage: strman [InputFile] [Option]\n");
 	printf("Options:\n");
-	//format: opt1, opt2, param, descp
-	printf("%s,%s\t%s\t\t%s\n", cmdln_options[0], cmdln_options[1], PARAM_NONE, "Turn on verbos");
-	printf("%s,%s\t%s\t\t%s\n", cmdln_options[2], cmdln_options[3], "<lineno(s)>", "Ignore line(s) by number. seprated by ','");
-	printf("%s,%s\t%s\t\t%s\n", cmdln_options[4], cmdln_options[5], "<string>", "Append string to front");
-	printf("%s,%s\t%s\t\t%s\n", cmdln_options[6], cmdln_options[7], "<string>", "Append string to back");
+	
+	PRINT_HELP_NOPARAM(cmdln_options[0], cmdln_options[1], "Turn on verbos");
+	PRINT_HELP_PARAM(cmdln_options[2], cmdln_options[3], "<lineno(s)>", "Ignore line(s) by number. seprated by ','");
+	PRINT_HELP_PARAM(cmdln_options[4], cmdln_options[5], "<string>", "Append string to front");
+	PRINT_HELP_PARAM(cmdln_options[6], cmdln_options[7], "<string>", "Append string to back");
 
-	printf("%s,%s\t%s\t\t%s\n", cmdln_options[8], cmdln_options[9], "<string>", "Remove string from front");
+	PRINT_HELP_PARAM(cmdln_options[8], cmdln_options[9], "<string>", "Remove string from front");
 
-	printf("%s,%s\t%s\t\t%s\n", cmdln_options[10], cmdln_options[11], "<char(s)>", "Remove char(s)");
+	PRINT_HELP_PARAM(cmdln_options[10], cmdln_options[11], "<char(s)>", "Remove char(s)");
 
-	printf("%s,%s\t%s\t\t%s\n", cmdln_options[12], cmdln_options[13], PARAM_NONE, "Remove all lower char(s)");
-	printf("%s,%s\t%s\t\t%s\n", cmdln_options[14], cmdln_options[15], PARAM_NONE, "Remove all upper char(s)");
-	printf("%s,%s\t%s\t\t%s\n", cmdln_options[16], cmdln_options[17], PARAM_NONE, "Remove all numbers char(s)");
-	printf("%s,%s\t%s\t\t%s\n", cmdln_options[18], cmdln_options[19], PARAM_NONE, "Remove all special char(s)");
+	PRINT_HELP_NOPARAM(cmdln_options[12], cmdln_options[13], "Remove all lower char(s)");
+	PRINT_HELP_NOPARAM(cmdln_options[14], cmdln_options[15], "Remove all upper char(s)");
+	PRINT_HELP_NOPARAM(cmdln_options[16], cmdln_options[17], "Remove all numbers char(s)");
+	PRINT_HELP_NOPARAM(cmdln_options[18], cmdln_options[19], "Remove all special char(s)");
 
-	printf("%s,%s\t%s\t\t%s\n", cmdln_options[20], cmdln_options[21], "<+num|-num>", "Remove number of chars (positive number: remove from front, negitive number: remove from back)");
+	PRINT_HELP_PARAM(cmdln_options[20], cmdln_options[21], "<+num|-num>", "Remove number of chars (positive number: remove from front, negitive number: remove from back)");
 }
 
 POpts parse_command_line(int argc, char* argv[])

@@ -32,8 +32,18 @@ typedef struct RUN_OPTIONS
 	char* param;
 } Opts, * POpts;
 
-#define opts_check(opt) (opt->param || (opt->ope == RMV_L || opt->ope == RMV_U || opt->ope == RMV_D || opt->ope == RMV_S)) && opt->ope
-#define opts_check_file(opt) file_exista(opt->file)
+
+inline bool opt_check(POpts opt)
+{
+	if (opt != NULL)
+	{
+		return (opt->param || (opt->ope == RMV_L || opt->ope == RMV_U || opt->ope == RMV_D || opt->ope == RMV_S)) && opt->ope;
+	}
+	return false;
+}
+
+
+#define opts_check_file(opt) (opt != NULL && file_exista(opt->file))
 #define opts_new() mem_alloc_obj_zero(Opts)
 
 inline int get_ints_from_str(char* buff, const char* sep, int* ints)

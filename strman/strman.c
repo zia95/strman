@@ -40,7 +40,7 @@ void print_file(PLList lst, bool verbos)
 	if (verbos)
 		printf("--------------------------------------------------------------\n");
 
-	for (int i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 	{
 		ln = llist_get(lst, i)->pdata;
 		if (verbos)
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 {
 	POpts popt = parse_command_line(argc, argv);
 
-	if (!opts_check(popt))
+	if (!opt_check(popt))
 	{
 		fprintf(stderr, "Failed to parse options...\n");
 		print_help();
